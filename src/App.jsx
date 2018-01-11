@@ -67,7 +67,7 @@ class App extends Component {
     let message = {
        id: Math.random(),
        type: 'chat',
-       content: content.message,
+       content: content,
        username: username
     };
 
