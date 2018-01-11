@@ -9,9 +9,10 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.handler = this.handler.bind(this);
+
     this.state = {
       currentUser: {
-        name: "Bob"
+        name: "Anonymous"
       },  // optional. if currentUser is not defined, it means the user is Anonymous
       messages: [
         {
@@ -28,20 +29,33 @@ class App extends Component {
   }
 
   // Add Message func
-  addMessage(content) {
-      const newMsg = {
+  addMsg(content, username) {
+    const newMsg = {
        id: Math.random(),
-       content: content
-      };
+       type: 'chat',
+       content: content,
+       username: username
+    };
 
-      const newList = this.state.messages.concat(newMsg);
-      this.setState({
-        messages: newList
-      });
-    }
+    let newList = this.state.messages.concat(newMsg);
+
+    this.setState({
+      messages: newList
+    });
+  }
 
   componentDidMount() {
-    console.log("componentDidMount <App />");
+    // console.log("componentDidMount <App />");
+    this.socket = new WebSocket("ws://localhost:3001");
+    console.log('SOCKET', this.socket);
+
+    this.socket.onopen = (event) => {
+      console.log('Connected to server');
+      console.log("Event should be number of users:  ", event);
+      const onlineCount = JSON.parse(event);
+      this.state.counter = onlineCount.count;
+    }
+
     setTimeout(() => {
 
       // Adds new message to message list in data store
@@ -65,13 +79,14 @@ class App extends Component {
       content: event.message
     }
   }
+
   render() {
     return (
       <div>
         <MessageList messages={this.state.messages}/>
         <Chatbar
           username={this.state.currentUser.name}
-          addMessage={this.addMessage.bind(this)}
+          addMsg={this.addMsg.bind(this)}
         />
       </div>
     );

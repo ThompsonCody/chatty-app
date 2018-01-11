@@ -6,7 +6,15 @@ class Chatbar extends Component {
     super(props);
     this.state = {
       name: this.props.username,
-      message: this.props.value
+      message: '',
+    }
+  }
+
+  msgHandler(event){
+    this.setState({message: event.target.value});
+    console.log("msg -->", this.state.message);
+    if (event.key == 'Enter') {
+      this.props.addMsg(event.target.value, this.state.name);
     }
   }
 
@@ -28,6 +36,7 @@ class Chatbar extends Component {
           <input
             className="chatbar-message"
             placeholder="Type a message and hit ENTER"
+            onKeyPress={this.msgHandler.bind(this)}
           />
         </footer>
       </div>
