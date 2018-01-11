@@ -34,9 +34,16 @@ wss.on('connection', (ws) => {
 
   console.log('Client connected');
 
+  ws.on('message', function incoming(message){
+    console.log('received: %s', JSON.parse(message).content);
+    // why is this parse undefined?
+    ws.send("I am here");
+  });
   // let userCount = wss.countUser(wss.clients.size);
   // wss.broadcast(JSON.stringify(userCount));
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  wss.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('error', () => {console.log('Error')});
 });
+

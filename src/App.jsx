@@ -11,6 +11,7 @@ class App extends Component {
     this.handler = this.handler.bind(this);
 
     this.state = {
+      server: null,
       currentUser: {
         name: "Anonymous"
       },  // optional. if currentUser is not defined, it means the user is Anonymous
@@ -28,32 +29,22 @@ class App extends Component {
     }
   }
 
-  // Add Message func
-  addMsg(content, username) {
-    const newMsg = {
-       id: Math.random(),
-       type: 'chat',
-       content: content,
-       username: username
-    };
-
-    let newList = this.state.messages.concat(newMsg);
-
-    this.setState({
-      messages: newList
-    });
-  }
 
   componentDidMount() {
     // console.log("componentDidMount <App />");
     this.socket = new WebSocket("ws://localhost:3001");
-    console.log('SOCKET', this.socket);
+    this.setState({server: this.socket});
+      console.log('SOCKET', this.socket);
 
     this.socket.onopen = (event) => {
       console.log('Connected to server');
-      console.log("Event should be number of users:  ", event);
-      const onlineCount = JSON.parse(event);
-      this.state.counter = onlineCount.count;
+      // console.log("Event should be number of users:  ", event);
+      // const onlineCount = JSON.parse(event);
+      // this.state.counter = onlineCount.count;
+    }
+
+    this.socket.onmessage = function(event){
+      console.log(event.data);
     }
 
     setTimeout(() => {
@@ -69,6 +60,25 @@ class App extends Component {
       // Calling setState will trigger a call to render() in App and all child components.
       this.setState({messages: messages})
     }, 3000);
+  }
+
+  // Add Message func
+  addMsg(content, username) {
+    let message = {
+       id: Math.random(),
+       type: 'chat',
+       content: content.message,
+       username: username
+    };
+
+      // let newList = this.state.messages.concat(newMsg);
+
+      // this.setState({
+      //   messages: newList
+      // });
+
+    //WS connection - send msg to server
+    this.socket.send(JSON.stringify(message));
   }
 
   handler(event) {
