@@ -6,22 +6,47 @@ class Chatbar extends Component {
     super(props);
     this.state = {
       name: this.props.username,
-      message: '',
+      message: this.props.value,
     }
+    this.msgHandler = this.msgHandler.bind(this);
+    this.contentHandler = this.contentHandler.bind(this);
+    this.nameHandler = this.nameHandler.bind(this);
   }
 
-  msgHandler(event){
-    this.setState({message: event.target.value});
+  contentHandler(event) {
+   this.setState({ message: event.target.value });
+  }
+
+  msgHandler(event) {
+    // this.setState({message: event.target.value});
     console.log("msg -->", this.state.message);
     if (event.key == 'Enter') {
-      this.props.addMsg(event.target.value, this.state.name);
+      this.props.onMessage(this.state.message);
+      this.setState({ message: '' });
     }
   }
 
   nameHandler(event){
-    this.setState({name: event.target.value});
     console.log("Name -->", this.state.name);
+    // let user = "";
+    if(event.key == 'Enter'){
+      this.props.onNameChange(this.state.name);
+    }
+    this.setState({
+      name: event.target.value
+    });
   }
+
+  // newNameHandler(event){
+  //   let newUser = "";
+  //   if(event.target.value === '') {
+  //     newUser = 'Anonymous';
+  //   } else {
+  //     newUser = event.target.value;
+  //   }
+  //   // this.props.notification(this.props.currentUser, newUser);
+  //   this.props.notification(this.props.user, newUser);
+  // }
 
   render(){
     return(
@@ -30,13 +55,15 @@ class Chatbar extends Component {
           <input
             className="chatbar-username"
             placeholder="Your Name (Optional)"
-            onChange={this.nameHandler.bind(this)}
-            defaultValue={this.props.username}
+            onKeyUp={this.nameHandler}
+            defaultValue={this.props.user.name}
           />
           <input
             className="chatbar-message"
-            placeholder="Type a message and hit ENTER"
-            onKeyPress={this.msgHandler.bind(this)}
+            placeholder="Type message"
+            value={this.state.message}
+            onChange={this.contentHandler}
+            onKeyPress={this.msgHandler}
           />
         </footer>
       </div>

@@ -1,40 +1,30 @@
 import React, {Component} from 'react';
 import Chatbar from './Chatbar.jsx';
-import Message from './Message.jsx';
+// import Message from './Message.jsx';
 import MessageList from './MessageList.jsx';
+// import Nav from './nav.jsx';
 
 
 class App extends Component {
-
   constructor(props) {
     super(props);
-    this.handler = this.handler.bind(this);
-
     this.state = {
-      server: null,
-      currentUser: {
-        name: "Anonymous"
-      },  // optional. if currentUser is not defined, it means the user is Anonymous
-      messages: [
-        {
-          id: 1,
-          username: "Bob",
-          content: "Has anyone seen my marbles?"
-        }, {
-          id: 2,
-          username: "Anonymous",
-          content: "No, I think you lost them. You lost your marbles Bob. You lost them for good."
-        }
-      ]
+      currentUser: {name: "Anonymous"},  // optional. if currentUser is not defined, it means the user is Anonymous
+      messages: [],
+      onlineUsers: 1
     }
+
+    this.addMsg = this.addMsg.bind(this);
+    // this.notification = this.notification.bind(this);
+    this.nameChangeHandler = this.nameChangeHandler.bind(this);
+    this.socket = null;
+    console.log(this.props);
   }
 
 
   componentDidMount() {
-    // console.log("componentDidMount <App />");
     this.socket = new WebSocket("ws://localhost:3001");
     this.setState({server: this.socket});
-      console.log('SOCKET', this.socket);
 
     this.socket.onopen = (event) => {
       console.log('Connected to server');
@@ -43,60 +33,65 @@ class App extends Component {
       // this.state.counter = onlineCount.count;
     }
 
-    this.socket.onmessage = function(event){
+    this.socket.onmessage = (event) => {
+      let data = JSON.parse(event.data);
       console.log(event.data);
+      let message = this.state.messages.concat(data);
+
+      console.log("messages: ", this.state.messages.length);
+
+      this.setState({ messages: message});
+
     }
-
-    setTimeout(() => {
-
-      // Adds new message to message list in data store
-      const newMsg = {
-        id: 3,
-        username: "Michelle",
-        content: "Hello there!"
-      };
-      const messages = this.state.messages.concat(newMsg)
-
-      // Calling setState will trigger a call to render() in App and all child components.
-      this.setState({messages: messages})
-    }, 3000);
   }
 
-  // Add Message func
-  addMsg(content, username) {
+  // Add Message handler
+  addMsg(content) {
     let message = {
-       id: Math.random(),
        type: 'chat',
-       content: content,
-       username: username
+       content,//: content.message,
+       username: this.state.currentUser.name
     };
-
-      // let newList = this.state.messages.concat(newMsg);
-
-      // this.setState({
-      //   messages: newList
-      // });
 
     //WS connection - send msg to server
     this.socket.send(JSON.stringify(message));
+
   }
 
-  handler(event) {
-    console.log("Handler");
-    const newID = Math.random();
-    const newMsg = {
-      username: event.name,
-      content: event.message
+  // //notication handler
+  // notification(newUser){
+
+  //   this.setState({
+  //     currentUser: {name: newUser}
+  //   })
+
+  // }
+
+  //nameChangeHandler
+  nameChangeHandler(newName){
+    const notif = {
+      content: `${this.state.currentUser.name} changed their name to ${newName}`,
+      type: 'notication'
     }
+    this.setState({
+      currentUser: {name: newName}
+    });
+    console.log('notification --> ', notif);
+    this.socket.send(JSON.stringify(notif));
   }
 
   render() {
     return (
       <div>
+        <nav className="navbar">
+          <a href="/" className="navbar-brand">Chatty</a>
+          <div className="user-counter">{this.props.onlineUsers} users are online</div>
+        </nav>
         <MessageList messages={this.state.messages}/>
         <Chatbar
-          username={this.state.currentUser.name}
-          addMsg={this.addMsg.bind(this)}
+          user={this.state.currentUser}
+          onMessage={this.addMsg}
+          onNameChange = {this.nameChangeHandler}
         />
       </div>
     );
