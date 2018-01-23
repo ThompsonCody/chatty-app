@@ -8,7 +8,7 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: {name: "Anonymous"},  // optional. if currentUser is not defined, it means the user is Anonymous
+      currentUser: {name: 'Anonymous'},  // optional. if currentUser is not defined, it means the user is Anonymous
       messages: [],
       onlineUsers: ''
     }
@@ -16,26 +16,20 @@ class App extends Component {
     this.addMsg = this.addMsg.bind(this);
     this.nameChangeHandler = this.nameChangeHandler.bind(this);
     this.socket = null;
-    console.log(this.props);
   }
 
 
   componentDidMount() {
-    this.socket = new WebSocket("ws://localhost:3001");
+    this.socket = new WebSocket('ws://localhost:3001');
     this.setState({server: this.socket});
 
-    this.socket.onopen = (event) => {
+    this.socket.onopen = () => {
       console.log('Connected to server');
-      // console.log("Event should be number of users:  ", event);
-      // const onlineCount = JSON.parse(event);
-      // this.state.counter = onlineCount.count;
     }
 
     this.socket.onmessage = (event) => {
       let data = JSON.parse(event.data);
-      console.log(event.data);
       let message = this.state.messages.concat(data);
-      console.log("messages: ", this.state.messages.length);
 
       if(data.type !== 'userCount') {
         this.setState({messages: message});
@@ -50,7 +44,7 @@ class App extends Component {
   addMsg(content) {
     let message = {
        type: 'chat',
-       content,//: content.message,
+       content,
        username: this.state.currentUser.name
     };
 
@@ -61,13 +55,15 @@ class App extends Component {
 
   nameChangeHandler(newName){
     const notif = {
+      username: 'God',
       content: `${this.state.currentUser.name} changed their name to ${newName}`,
-      type: 'notication'
+      type: 'notification'
     }
     this.setState({
       currentUser: {name: newName}
     });
-    console.log('notification --> ', notif);
+
+    //WS connection - send notification to server
     this.socket.send(JSON.stringify(notif));
   }
 

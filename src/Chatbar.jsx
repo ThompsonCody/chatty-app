@@ -18,7 +18,6 @@ class Chatbar extends Component {
   }
 
   msgHandler(event) {
-    console.log("msg -->", this.state.message);
     if (event.key == 'Enter') {
       this.props.onMessage(this.state.message);
       this.setState({ message: '' });
@@ -26,8 +25,6 @@ class Chatbar extends Component {
   }
 
   nameHandler(event){
-    console.log("Name -->", this.state.name);
-    // let user = "";
     if(event.key == 'Enter'){
       this.props.onNameChange(this.state.name);
     }

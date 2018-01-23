@@ -5,7 +5,7 @@ class Header extends Component {
     return (
       <header className="navbar">
         <a href="/" className="navbar-brand">Chatty</a>
-        <div className="user-counter">{this.props.onlineUsers} users are online</div>
+        <span className="user-counter">{this.props.onlineUsers} users are online</span>
       </header>
     )
   }
