@@ -1,11 +1,10 @@
-React Boilerplate
+CHATTY
 =====================
 
-A minimal and light dev environment for ReactJS.
+A minimal and light chatting app
 
 ### Usage
 
-Clone the boilerplate and create your own git repo.
 
 ```
 git clone git@github.com:lighthouse-labs/react-simple-boilerplate.git
