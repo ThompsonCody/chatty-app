@@ -18,7 +18,6 @@ class Chatbar extends Component {
   }
 
   msgHandler(event) {
-    // this.setState({message: event.target.value});
     console.log("msg -->", this.state.message);
     if (event.key == 'Enter') {
       this.props.onMessage(this.state.message);
@@ -36,17 +35,6 @@ class Chatbar extends Component {
       name: event.target.value
     });
   }
-
-  // newNameHandler(event){
-  //   let newUser = "";
-  //   if(event.target.value === '') {
-  //     newUser = 'Anonymous';
-  //   } else {
-  //     newUser = event.target.value;
-  //   }
-  //   // this.props.notification(this.props.currentUser, newUser);
-  //   this.props.notification(this.props.user, newUser);
-  // }
 
   render(){
     return(

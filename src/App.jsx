@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import Chatbar from './Chatbar.jsx';
-// import Message from './Message.jsx';
 import MessageList from './MessageList.jsx';
-// import Nav from './nav.jsx';
+import Header from './Header.jsx';
 
 
 class App extends Component {
@@ -11,11 +10,10 @@ class App extends Component {
     this.state = {
       currentUser: {name: "Anonymous"},  // optional. if currentUser is not defined, it means the user is Anonymous
       messages: [],
-      onlineUsers: 1
+      onlineUsers: ''
     }
 
     this.addMsg = this.addMsg.bind(this);
-    // this.notification = this.notification.bind(this);
     this.nameChangeHandler = this.nameChangeHandler.bind(this);
     this.socket = null;
     console.log(this.props);
@@ -37,10 +35,13 @@ class App extends Component {
       let data = JSON.parse(event.data);
       console.log(event.data);
       let message = this.state.messages.concat(data);
-
       console.log("messages: ", this.state.messages.length);
 
-      this.setState({ messages: message});
+      if(data.type !== 'userCount') {
+        this.setState({messages: message});
+      } else {
+        this.setState({onlineUsers: data.content});
+      }
 
     }
   }
@@ -58,16 +59,6 @@ class App extends Component {
 
   }
 
-  // //notication handler
-  // notification(newUser){
-
-  //   this.setState({
-  //     currentUser: {name: newUser}
-  //   })
-
-  // }
-
-  //nameChangeHandler
   nameChangeHandler(newName){
     const notif = {
       content: `${this.state.currentUser.name} changed their name to ${newName}`,
@@ -83,10 +74,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <nav className="navbar">
-          <a href="/" className="navbar-brand">Chatty</a>
-          <div className="user-counter">{this.props.onlineUsers} users are online</div>
-        </nav>
+        <Header onlineUsers={this.state.onlineUsers}/>
         <MessageList messages={this.state.messages}/>
         <Chatbar
           user={this.state.currentUser}
